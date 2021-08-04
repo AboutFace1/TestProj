@@ -1,10 +1,13 @@
 package gui;
 
+import exceptions.MismatchedSizeException;
 import model.World;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Executable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -39,7 +42,7 @@ public class GamePanel extends JPanel {
          }
       });
 
-      Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> next(), 500, 500, TimeUnit.MILLISECONDS);
+      /*Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> next(), 500, 500, TimeUnit.MILLISECONDS);*/
 
    }
 
@@ -115,6 +118,25 @@ public class GamePanel extends JPanel {
 
    public void next() {
       world.next();
+      repaint();
+   }
+
+   public void save(File selectedFile) {
+      try {
+         world.save(selectedFile);
+      } catch (IOException e) {
+         JOptionPane.showMessageDialog(this, "Cannot save selected file", "An error occured",JOptionPane.ERROR_MESSAGE);
+      }
+   }
+
+   public void load(File selectedFile) {
+      try {
+         world.load(selectedFile);
+      } catch (IOException e) {
+         JOptionPane.showMessageDialog(this, "Cannot load selected file", "An error occurred",JOptionPane.ERROR_MESSAGE);
+      } catch (MismatchedSizeException e) {
+         JOptionPane.showMessageDialog(this, "Loading grid size from a larger or smaller grid", "Warning",JOptionPane.WARNING_MESSAGE);
+      }
       repaint();
    }
 }

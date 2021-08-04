@@ -1,5 +1,8 @@
 package model;
 
+import exceptions.MismatchedSizeException;
+
+import java.io.*;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -116,6 +119,43 @@ public class World {
          for (int col = 0; col < columns; col++) {
             grid[row][col] = buffer[row][col];
          }
+      }
+   }
+
+   public void save(File selectedFile) throws IOException {
+
+      var dos = new DataOutputStream(new FileOutputStream(selectedFile));
+      dos.writeInt(rows);
+      dos.writeInt(columns);
+
+      for (int row = 0; row < rows; row++) {
+         for (int col = 0; col < columns; col++) {
+            dos.writeBoolean(grid[row][col]);
+         }
+      }
+   }
+
+   public void load(File selectedFile) throws IOException, MismatchedSizeException {
+
+      var dis = new DataInputStream(new FileInputStream(selectedFile));
+      int fileRows = dis.readInt();
+      int fileCols = dis.readInt();
+
+
+      for (int row = 0; row < fileRows; row++) {
+         for (int col = 0; col < fileCols; col++) {
+            boolean status = dis.readBoolean();
+
+            if (row >= rows || col >= columns) {
+               continue;
+            }
+
+            grid[row][col] = status;
+         }
+      }
+
+      if (fileRows != this.rows || fileCols != this.columns) {
+         throw new MismatchedSizeException();
       }
    }
 }
